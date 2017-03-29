@@ -4,12 +4,37 @@ var StateMain = {
     if (screen.width < 800) {
       game.scale.forceOrientation(true, false);
     }
+
+    game.load.spritesheet('dragon', 'images/main/dragon.png', 120, 85, 4);
+    game.load.image("background", "images/main/background.png");
   },
 
   create: function() {
     // set up objects, variables
     // sounds, text
     // good guys, explosions
+
+    this.top = 0;
+
+    // dragon
+    this.dragon = game.add.sprite(0, 0, "dragon");
+    this.dragon.animations.add('fly', [0,1,2,3], 12, true);
+    this.dragon.animations.play('fly');
+
+    // background
+     this.background = game.add.tileSprite(0, game.height-480, game.width, 480, 'background');
+
+    // IPAD fix
+    if (screen.height > 764) {
+      this.background.y = game.world.centerY - this.background.height/2;
+      this.top = this.background.y;
+    }
+
+    this.dragon.bringToTop();
+    this.dragon.position.y = this.top;
+    this.background.autoScroll(-100,0);
+
+    this.setListeners();
   },
 
   update: function() {
