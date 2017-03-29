@@ -1,0 +1,19 @@
+{
+  "name": "hungry_dragon",
+  "version": "1.0.0",
+  "description": "Udemy course at www.udemy.com/building-games-with-phaser",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/felipehespanhol/hungryDragon.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/felipehespanhol/hungryDragon/issues"
+  },
+  "homepage": "https://github.com/felipehespanhol/hungryDragon#readme"
+}
