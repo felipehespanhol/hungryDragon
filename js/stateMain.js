@@ -14,7 +14,10 @@ var StateMain = {
     // sounds, text
     // good guys, explosions
 
+    game.physics.startSystem(Phaser.Physics.ARCADE);
+
     this.top = 0;
+    this.bottom = game.height-100;
 
     // dragon
     this.dragon = game.add.sprite(0, 0, "dragon");
@@ -32,6 +35,10 @@ var StateMain = {
 
     this.dragon.bringToTop();
     this.dragon.position.y = this.top;
+    game.physics.enable(this.dragon, Phaser.Physics.ARCADE);
+
+    this.dragon.body.gravity.y = 500;
+
     this.background.autoScroll(-100,0);
 
     this.setListeners();
@@ -39,6 +46,12 @@ var StateMain = {
 
   update: function() {
     // constant running loop
+    if (this.dragon.y > this.bottom) {
+      this.dragon.y = this.bottom;
+      this.dragon.body.gravity.y = 0;
+    } else {
+      this.dragon.body.gravity.y = 500;
+    }
   },
 
   setListeners: function() {
