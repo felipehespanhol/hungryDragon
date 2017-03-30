@@ -11,6 +11,10 @@ var StateMain = {
     game.load.image("balloon", "images/main/thought.png");
     game.load.spritesheet('dragon', 'images/main/dragon.png', 120, 85, 4);
     game.load.spritesheet('candy', 'images/main/candy.png', 52, 50, 8);
+    game.load.spritesheet('soundButtons', 'images/ui/soundButtons.png', 44, 44, 4);
+    game.load.audio("burp", "sounds/burp.mp3");
+    game.load.audio("gulp", "sounds/gulp.mp3");
+    game.load.audio("backgroundMusic", "sounds/background.mp3");
   },
 
   create: function() {
@@ -18,10 +22,22 @@ var StateMain = {
     // sounds, text
     // good guys, explosions
 
+    score = 0;
+    this.musicPlaying = false;
+
+    game.stage.backgroundColor = "#000000";
+
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     this.top = 0;
     this.bottom = game.height-100;
+
+    // sounds
+    this.burp = game.add.audio("burp");
+    this.gulp = game.add.audio("gulp");
+    this.backgroundMusic = game.add.audio("backgroundMusic");
+    this.backgroundMusic.volume = 0.5;
+    this.backgroundMusic.loop = true;
 
     // dragon
     this.dragon = game.add.sprite(0, 0, "dragon");
@@ -35,6 +51,7 @@ var StateMain = {
     if (screen.height > 764) {
       this.background.y = game.world.centerY - this.background.height/2;
       this.top = this.background.y;
+      this.bottom = this.background.y + 360;
     }
 
     this.background.autoScroll(-100,0);
@@ -56,15 +73,20 @@ var StateMain = {
     this.balloonGroup.x = 50;
 
     // text
-    this.scoreText = game.add.text(game.world.centerX, 100, "0");
+    this.scoreText = game.add.text(game.world.centerX, this.top + 100, "0");
     this.scoreText.fill = "#000000";
     this.scoreText.fontSize = 64;
     this.scoreText.anchor.set(0.5, 0.5);
 
-    this.scoreLabel = game.add.text(game.world.centerX, 50, "SCORE");
+    this.scoreLabel = game.add.text(game.world.centerX, this.top + 50, "SCORE");
     this.scoreLabel.fill = "#000000";
     this.scoreLabel.fontSize = 32;
     this.scoreLabel.anchor.set(0.5, 0.5);
+
+    // sound buttons
+    this.btnMusic = game.add.sprite(20, 20, "soundButtons");
+    this.btnSound = game.add.sprite(70, 20, "soundButtons");
+    this.btnMusic.frame = 2;
 
     game.physics.enable([this.dragon, this.candies], Phaser.Physics.ARCADE);
 
@@ -75,6 +97,8 @@ var StateMain = {
 
     this.setListeners();
     this.resetThink();
+    this.updateButtons();
+    this.updateMusic();
   },
 
   update: function() {
@@ -98,17 +122,57 @@ var StateMain = {
     }
   },
 
+  toggleSound: function() {
+    soundOn = !soundOn;
+    this.updateButtons();
+  },
+
+  toggleMusic: function() {
+    musicOn = !musicOn;
+    this.updateButtons();
+  },
+
   setListeners: function() {
     if (screen.width < 800) {
       game.scale.enterIncorrectOrientation.add(this.wrongWay, this);
       game.scale.leaveIncorrectOrientation.add(this.rightWay, this);
     }
     game.time.events.loop(Phaser.Timer.SECOND, this.fireCandy, this);
+    this.btnSound.inputEnabled = true;
+    this.btnSound.events.onInputDown.add(this.toggleSound, this);
+    this.btnMusic.inputEnabled = true;
+    this.btnMusic.events.onInputDown.add(this.toggleSound, this);
+  },
+
+  updateButtons: function() {
+    if (soundOn) {
+      this.btnSound.frame = 0;
+    } else {
+      this.btnSound.frame = 1;
+    }
+    if (musicOn) {
+      this.btnMusic.frame = 2;
+    } else {
+      this.btnMusic.frame = 3;
+    }
+  },
+
+  updateMusic: function() {
+    if (musicOn) {
+      this.backgroundMusic.play();
+      if (!this.musicPlaying) {
+        this.musicPlaying = true;
+        this.backgroundMusic.play();
+      }
+    } else {
+      this.musicPlaying = false;
+      this.backgroundMusic.stop();
+    }
   },
 
   fireCandy: function() {
     var candy = this.candies.getFirstDead();
-    var yy = game.rnd.integerInRange(0, game.height-60);
+    var yy = game.rnd.integerInRange(this.top, this.bottom);
     var xx = game.width - 100;
     var type = game.rnd.integerInRange(0, 7);
 
@@ -124,7 +188,14 @@ var StateMain = {
       this.resetThink();
       score++;
       this.scoreText.text = score;
+      if (soundOn) {
+        this.gulp.play();
+      }
     } else {
+      this.backgroundMusic.stop();
+      if (soundOn) {
+        this.burp.play();
+      }
       candy.kill();
       game.state.start("StateOver");
     }
