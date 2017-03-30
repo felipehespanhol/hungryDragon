@@ -24,5 +24,8 @@ window.onload = function () {
   }
 
   game.state.add("StateMain",StateMain);
-  game.state.start("StateMain");
-}
+  game.state.add("StateTitle", StateTitle);
+  game.state.add("StateOver", StateOver);
+  game.state.start("StateTitle");
+  //game.state.start("StateMain");
+};
