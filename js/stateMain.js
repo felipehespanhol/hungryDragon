@@ -6,6 +6,7 @@ var StateMain = {
     }
 
     game.load.image("background", "images/main/background.png");
+    game.load.image("balloon", "images/main/thought.png");
     game.load.spritesheet('dragon', 'images/main/dragon.png', 120, 85, 4);
     game.load.spritesheet('candy', 'images/main/candy.png', 52, 50, 8);
   },
@@ -42,6 +43,17 @@ var StateMain = {
     this.candies.setAll('checkWorldBounds', true);
     this.candies.setAll('outOfBoundsKill', true);
 
+    // thought
+    this.balloonGroup = game.add.group();
+    this.balloon = game.add.sprite(0, 0, "balloon");
+    this.think = game.add.sprite(36, 26, "candy");
+    this.balloonGroup.add(this.balloon);
+    this.balloonGroup.add(this.think);
+    this.balloonGroup.scale.x = .5;
+    this.balloonGroup.scale.y = .5;
+    this.balloonGroup.x = 50;
+
+
     game.physics.enable([this.dragon, this.candies], Phaser.Physics.ARCADE);
 
     this.dragon.bringToTop();
@@ -50,11 +62,15 @@ var StateMain = {
     this.dragon.body.immovable = true;
 
     this.setListeners();
+    this.resetThink();
   },
 
   update: function() {
     // constant running loop
     game.physics.arcade.collide(this.dragon, this.candies, null, this.onEat);
+
+    this.balloonGroup.y = this.dragon.y - 60;
+
     if (game.input.activePointer.isDown) {
       this.flap();
     }
@@ -92,6 +108,11 @@ var StateMain = {
 
   onEat: function(dragon, candy) {
     candy.kill();
+  },
+
+  resetThink: function() {
+    var thinking = game.rnd.integerInRange(0, 7);
+    this.think.frame = thinking;
   },
 
   wrongWay: function() {
