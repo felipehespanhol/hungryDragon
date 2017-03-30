@@ -47,12 +47,14 @@ var StateMain = {
     this.dragon.bringToTop();
     this.dragon.position.y = this.top;
     this.dragon.body.gravity.y = 500;
+    this.dragon.body.immovable = true;
 
     this.setListeners();
   },
 
   update: function() {
     // constant running loop
+    game.physics.arcade.collide(this.dragon, this.candies, null, this.onEat);
     if (game.input.activePointer.isDown) {
       this.flap();
     }
@@ -86,6 +88,10 @@ var StateMain = {
     candy.reset(xx, yy);
     candy.enabled = true;
     candy.body.velocity.x = -200;
+  },
+
+  onEat: function(dragon, candy) {
+    candy.kill();
   },
 
   wrongWay: function() {
