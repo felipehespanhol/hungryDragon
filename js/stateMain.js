@@ -24,6 +24,9 @@ var StateMain = {
 
     score = 0;
     this.musicPlaying = false;
+    this.lift = 350;
+    this.fall = 500;
+    this.delay = 1;
 
     game.stage.backgroundColor = "#000000";
 
@@ -92,7 +95,7 @@ var StateMain = {
 
     this.dragon.bringToTop();
     this.dragon.position.y = this.top;
-    this.dragon.body.gravity.y = 500;
+    this.dragon.body.gravity.y = this.fall;
     this.dragon.body.immovable = true;
 
     this.setListeners();
@@ -137,7 +140,7 @@ var StateMain = {
       game.scale.enterIncorrectOrientation.add(this.wrongWay, this);
       game.scale.leaveIncorrectOrientation.add(this.rightWay, this);
     }
-    game.time.events.loop(Phaser.Timer.SECOND, this.fireCandy, this);
+    game.time.events.loop(Phaser.Timer.SECOND*this.delay, this.fireCandy, this);
     this.btnSound.inputEnabled = true;
     this.btnSound.events.onInputDown.add(this.toggleSound, this);
     this.btnMusic.inputEnabled = true;
@@ -179,7 +182,7 @@ var StateMain = {
     candy.frame = type;
     candy.reset(xx, yy);
     candy.enabled = true;
-    candy.body.velocity.x = -200;
+    candy.body.velocity.x = -this.lift;
   },
 
   onEat: function(dragon, candy) {
